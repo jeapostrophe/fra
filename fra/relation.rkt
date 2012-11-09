@@ -1,8 +1,10 @@
-#lang scheme
-(require (planet dherman/set:4/set)
-         "schema.ss"
-         "tuple.ss"
-         "prop.ss")
+#lang racket/base
+(require racket/set
+         racket/match
+         racket/contract
+         "schema.rkt"
+         "tuple.rkt"
+         "prop.rkt")
 
 ; XXX Remove schema?
 (define-struct relation (schema tuples)
@@ -23,8 +25,8 @@
 (define (singleton-relation schema elem)
   (make-relation 
    schema
-   (set-add (singleton-tuple (schema-length schema) elem)
-            empty-set)))
+   (set-add (set)
+            (singleton-tuple (schema-length schema) elem))))
 
 (define (prim-lift prim)
   (define lifted
@@ -43,8 +45,8 @@
   lifted)
 
 (define relation-union (prim-lift set-union))
-(define relation-difference (prim-lift set-difference))
-(define relation-intersection (prim-lift set-intersection))
+(define relation-difference (prim-lift set-subtract))
+(define relation-intersection (prim-lift set-intersect))
 
 (define relation-product
   (match-lambda*
@@ -102,14 +104,11 @@
 
 (define (relation-insert old tuple)
   (struct-copy relation old
-               [tuples (set-add tuple (relation-tuples old))]))
-
-(define (set-remove elem set)
-  (set-difference set (set-add elem empty-set)))
+               [tuples (set-add (relation-tuples old) tuple)]))
   
 (define (relation-delete old tuple)
   (struct-copy relation old
-               [tuples (set-remove tuple (relation-tuples old))]))
+               [tuples (set-remove (relation-tuples old) tuple)]))
 
 (provide/contract
  [relation? (any/c . -> . boolean?)]

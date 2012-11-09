@@ -8,5 +8,5 @@
 (define blurb
   (list "A purely functional implementation of a relational algebra + database"))
 (define scribblings '(("fra.scrbl" ())))
-(define primary-file "main.ss")
+(define primary-file "main.rkt")
 (define categories '(datastructures))

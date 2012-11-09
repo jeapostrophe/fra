@@ -1,22 +1,22 @@
-#lang scheme
-(require "schema.ss"
-         "prop.ss"
-         "query.ss"
-         "tuple.ss"
-         "relation.ss"
-         "database.ss")
+#lang racket/base
+(require "schema.rkt"
+         "prop.rkt"
+         "query.rkt"
+         "tuple.rkt"
+         "relation.rkt"
+         "database.rkt")
 
 (provide
- ;; schema.ss
+ ;; schema.rkt
  schema/c
- ;; prop.ss
+ ;; prop.rkt
  prop?
  make-prop:or
  make-prop:and
  make-prop:not
  make-prop:op
  Proposition
- ;; query.ss
+ ;; query.rkt
  query?
  database-schema/c
  current-database-schema
@@ -38,7 +38,7 @@
  query-left-outer-join
  query-right-outer-join
  query-outer-join
- ;; tuple.ss
+ ;; tuple.rkt
  tuple?
  tuple
  tuple-length
@@ -50,7 +50,7 @@
  relation-tuples
  NULL
  Relation
- ;; database.ss
+ ;; database.rkt
  with-database
  Database
  call-with-database

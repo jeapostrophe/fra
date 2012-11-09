@@ -1,4 +1,6 @@
-#lang scheme
+#lang racket/base
+(require racket/match
+         racket/contract)
 
 (define-struct an-ivector ()
   #:transparent

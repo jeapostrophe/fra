@@ -1,7 +1,7 @@
-#lang scheme
+#lang racket/base
 (require tests/eli-tester
-         "main.ss"
-         "ivector.ss")
+         "main.rkt"
+         "ivector.rkt")
 
 (define TestDB
   (Database

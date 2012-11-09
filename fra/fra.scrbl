@@ -1,29 +1,28 @@
 #lang scribble/doc
-@(require (planet cce/scheme:4:1/planet)
-          (for-label (planet dherman/set:4:0/set)
-                     "main.ss"
-                     scheme)
+@(require (for-label racket/set
+                     "main.rkt"
+                     racket/base)
           scribble/manual)
 
 @title{Functional Relational Algebra}
-@author{@(author+email "Jay McCarthy" "jay@plt-scheme.org")}
+@author{@(author+email "Jay McCarthy" "jay@racket-lang.org")}
 
-@defmodule/this-package[]
+@defmodule[fra]
 
-This package provides a purely functional implementation of @link["http://en.wikipedia.org/wiki/Relational_algebra"]{Relational Algebra} in PLT Scheme.
+This package provides a purely functional implementation of @link["http://en.wikipedia.org/wiki/Relational_algebra"]{Relational Algebra} in Racket.
 
 @section{Examples}
 
 @(require scribble/eval)
 @(define the-eval
   (let ([the-eval (make-base-eval)])
-    (the-eval `(require scheme))
-    (the-eval `(require (planet ,(this-package-version-symbol))))
+    (the-eval `(require racket/base
+                        fra))
     the-eval))
 
 In this example, we will build a relational database for a university grade book. First, we define a database with a few relations:
 
-@schemeblock+eval[#:eval the-eval
+@racketblock+eval[#:eval the-eval
  (define GradebookDB
    (Database
     [Students
@@ -44,12 +43,12 @@ In this example, we will build a relational database for a university grade book
      [2 3 -inf.0]]))
  ]
 
-At this point @scheme[GradebookDB] is bound to a value obeying @scheme[database/c] that contains three relations: @scheme['Students], @scheme['Projects], and @scheme['Grades]. The first S-expression after each relation identifier is the @scheme[schema/c] for that relation. Each S-expression after that is a @scheme[Tuple] that is in the relation. As you can see, any Scheme value can be included in a tuple.
+At this point @racket[GradebookDB] is bound to a value obeying @racket[database/c] that contains three relations: @racket['Students], @racket['Projects], and @racket['Grades]. The first S-expression after each relation identifier is the @racket[schema/c] for that relation. Each S-expression after that is a @racket[Tuple] that is in the relation. As you can see, any Scheme value can be included in a tuple.
 
 Let's do some queries!
 
 @defs+int[#:eval the-eval
- ((require (planet dherman/set:4/set))
+ ((require racket/set)
   (define (print-relation r)
     (for ([c (in-list (relation-schema r))])
       (printf "~a\t" c))
@@ -79,7 +78,7 @@ As you can see from this interaction, a relation is just a set of tuples, which 
 
 Proposition can be any Scheme value that may be applied.
 
-Suppose that we attempted to use that proposition on a relation that did not have @scheme['Grade] in its schema?
+Suppose that we attempted to use that proposition on a relation that did not have @racket['Grade] in its schema?
 
 @interaction[#:eval the-eval
  (with-database GradebookDB
@@ -138,16 +137,16 @@ This section documents the APIs of the package.
 Schemas are defined as lists of symbols.
 
 @defthing[schema/c contract?]{
- Equivalent to @scheme[(listof symbol?)].
+ Equivalent to @racket[(listof symbol?)].
 }
 
 @subsection{Propositions}
 
-Propositions are used by @scheme[query-selection] to compute sub-relations.
+Propositions are used by @racket[query-selection] to compute sub-relations.
 
 @defproc[(prop? [v any/c])
          boolean?]{
- Returns @scheme[#t] if @scheme[v] is a proposition, @scheme[#f] otherwise.
+ Returns @racket[#t] if @racket[v] is a proposition, @racket[#f] otherwise.
 }
                   
 @defproc[(make-prop:or [lhs prop?] [rhs prop?]) prop?]
@@ -165,36 +164,36 @@ Propositions constructors.
                          #:contracts
                          ([proc procedure?]
                           [attribute identifier?])]{
- Returns a proposition. The interpretation of @scheme[not], @scheme[and], and @scheme[or] is standard.
+ Returns a proposition. The interpretation of @racket[not], @racket[and], and @racket[or] is standard.
  When a procedure is included in a proposition, the values of the named attributes are extracted from the tuple
- and applied to the procedure value; if it returns @scheme[#t], then the tuple is selected, otherwise it is rejected.
+ and applied to the procedure value; if it returns @racket[#t], then the tuple is selected, otherwise it is rejected.
 }
 
 @subsection{Queries}
 
-Queries are used by @scheme[execute-query] to run relational queries.
+Queries are used by @racket[execute-query] to run relational queries.
 
 @defproc[(query? [v any/c])
          boolean?]{
- Returns @scheme[#t] if @scheme[v] is a query, @scheme[#f] otherwise.
+ Returns @racket[#t] if @racket[v] is a query, @racket[#f] otherwise.
 }
                   
 @defthing[database-schema/c contract?]{
- Equivalent to @scheme[(-> symbol? schema/c)].
+ Equivalent to @racket[(-> symbol? schema/c)].
 }
 
 @defthing[current-database-schema (parameter/c database-schema/c)]{
- Used by @scheme[query-schema] to determine the schema of @scheme[query-relation] queries.
+ Used by @racket[query-schema] to determine the schema of @racket[query-relation] queries.
 }
 
 @defproc[(query-schema [q query?])
          schema/c]{
- Returns the schema of the relation @scheme[q] computes.
+ Returns the schema of the relation @racket[q] computes.
 }
                   
 @defproc[(query-relation [rid symbol?])
          query?]{
- Query of the relation @scheme[rid].
+ Query of the relation @racket[rid].
 }
                 
 @deftogether[
@@ -217,9 +216,9 @@ Queries are used by @scheme[execute-query] to run relational queries.
 ]{
   These construct queries represent the basic operations of @link["http://en.wikipedia.org/wiki/Relational_algebra"]{relational algebra}.
         
-  @scheme[query-rename*] applies multiple renamings at once using the dictionary to map old names to new names.
+  @racket[query-rename*] applies multiple renamings at once using the dictionary to map old names to new names.
   
-  @scheme[query-natural-join] takes an optional @scheme[equal?] argument to compare attribute values for equality.
+  @racket[query-natural-join] takes an optional @racket[equal?] argument to compare attribute values for equality.
 }
 
 @subsection{Tuples}
@@ -228,29 +227,29 @@ Tuples are the contents of relations.
 
 @defproc[(tuple? [v any/c])
          boolean?]{
- Returns @scheme[#t] if @scheme[v] is a tuple, @scheme[#f] otherwise.
+ Returns @racket[#t] if @racket[v] is a tuple, @racket[#f] otherwise.
 }
                   
 @defproc[(tuple-length [t tuple?])
          exact-nonnegative-integer?]{
- Returns the length of @scheme[t].
+ Returns the length of @racket[t].
 }
                                     
 @defproc[(tuple-ref [t tuple?]
                     [i exact-nonnegative-integer?])
          any/c]{
- Returns the @scheme[i]th element of @scheme[t].
+ Returns the @racket[i]th element of @racket[t].
 }
       
 @defproc[(tuple [elem any/c] ...)
          tuple?]{
- Returns a tuple that contains all the @scheme[elem]s.
+ Returns a tuple that contains all the @racket[elem]s.
 }
                         
 @defform[(Tuple elem ...)
          #:contracts
          ([elem any/c])]{
- Returns a tuple that contains all the @scheme[elem]s.
+ Returns a tuple that contains all the @racket[elem]s.
 }
 
 @subsection{Relations}
@@ -259,15 +258,15 @@ Relations are the contents of databases and the results of queries.
 
 @defproc[(relation? [v any/c])
          boolean?]{
- Returns @scheme[#t] if @scheme[v] is a relation, @scheme[#f] otherwise.
+ Returns @racket[#t] if @racket[v] is a relation, @racket[#f] otherwise.
 }
 
 @defproc[(relation-schema [r relation?]) schema/c]{
- Returns @scheme[r]'s schema.
+ Returns @racket[r]'s schema.
 }
 
 @defproc[(relation-tuples [r relation?]) (set? tuple?)]{
- Returns the set of tuples comprising the relation @scheme[r].
+ Returns the set of tuples comprising the relation @racket[r].
 }
 
 @defform[(Relation [attribute ...]
@@ -276,43 +275,43 @@ Relations are the contents of databases and the results of queries.
          #:contracts
          ([attribute identifier?]
           [elem any/c])]{
- Returns a relation with @scheme['(attribute ...)] as its schema that contains each @scheme[(Tuple elem ...)] as its tuples.
+ Returns a relation with @racket['(attribute ...)] as its schema that contains each @racket[(Tuple elem ...)] as its tuples.
 }
 
 @subsection{Database}
 
 @defthing[database/c contract?]{
- Equivalent to @scheme[(hash/c symbol? relation? #:immutable #t)].
+ Equivalent to @racket[(hash/c symbol? relation? #:immutable #t)].
 }
 
 @defproc[(database-insert [db database/c] [rid symbol?] [t tuple?])
          database/c]{
- Returns a database that is identical to @scheme[db], except @scheme[t] is in the relation @scheme[rid].
+ Returns a database that is identical to @racket[db], except @racket[t] is in the relation @racket[rid].
 }
 
 @defproc[(database-delete [db database/c] [rid symbol?] [t tuple?])
          database/c]{
- Returns a database that is identical to @scheme[db], except @scheme[t] is @emph{not} in the relation @scheme[rid].
+ Returns a database that is identical to @racket[db], except @racket[t] is @emph{not} in the relation @racket[rid].
 }
 
 @defproc[(call-with-database [db database/c] [thnk (-> any)])
          any]{
- Executes @scheme[(thnk)] with @scheme[db] as the current database.
+ Executes @racket[(thnk)] with @racket[db] as the current database.
 }
                            
 @defform[(with-database db e ...)
          #:contracts
          ([db database/c])]{
- Executes @scheme[(begin e ...)] with @scheme[db] as the current database.
+ Executes @racket[(begin e ...)] with @racket[db] as the current database.
 }
                            
 @defproc[(execute-query [q query?])
          relation?]{
- Computes the relation specified by @scheme[q] using the current database (chosen by @scheme[with-database]).
+ Computes the relation specified by @racket[q] using the current database (chosen by @racket[with-database]).
 }
                    
 @defthing[NULL any/c]{
- The NULL value that is inserted by the evaluation of @scheme[query-left-outer-join], @scheme[query-right-outer-join], or @scheme[query-outer-join].
+ The NULL value that is inserted by the evaluation of @racket[query-left-outer-join], @racket[query-right-outer-join], or @racket[query-outer-join].
 }
                    
 @defform[(Database
@@ -325,8 +324,8 @@ Relations are the contents of databases and the results of queries.
          ([relation identifier?]
           [attribute identifier?]
           [elem any/c])]{
- Returns a database with each @scheme['relation] specified as 
- @schemeblock[
+ Returns a database with each @racket['relation] specified as 
+ @racketblock[
  (Relation [attribute ...]
            (elem ...)
            ...)
@@ -338,5 +337,5 @@ Relations are the contents of databases and the results of queries.
 The current implementation uses immutable hashes as relations, vectors as tuples (except that they can be efficient appended), and lists as schemas.
 Propositions are structures, but are compiled to procedures (with attribute identifiers resolved to tuple positions) prior to query execution.
 
-@scheme[execute-query] uses a @link["http://en.wikipedia.org/wiki/Relational_algebra#Use_of_algebraic__properties_for_query_optimization"]{simple query optimizer}.
+@racket[execute-query] uses a @link["http://en.wikipedia.org/wiki/Relational_algebra#Use_of_algebraic__properties_for_query_optimization"]{simple query optimizer}.
 It has two passes: first it tries to push selection operations to the leaves of the query to reduce relation sizes prior to products, then it pulls selection operations towards the root (but not passed products) to reduce the number of iterations over all the elements of a tuple. During both passes, some simplifications are performed, such as merging adjacent renamings, projections, and identical (or trivial) selections. This optimization happens independent of any statistics about relation sizes, etc.

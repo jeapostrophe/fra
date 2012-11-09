@@ -1,7 +1,11 @@
-#lang scheme
-(require (planet dherman/set:4/set)
-         "tuple.ss"
-         "schema.ss")
+#lang racket/base
+(require racket/set
+         racket/match
+         racket/contract
+         racket/list
+         racket/dict
+         "tuple.rkt"
+         "schema.rkt")
 
 (define (prop-print prop port write?)
   (match prop

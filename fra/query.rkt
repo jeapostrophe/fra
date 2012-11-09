@@ -1,6 +1,9 @@
-#lang scheme
-(require "schema.ss"
-         "prop.ss")
+#lang racket/base
+(require racket/match
+         racket/contract
+         racket/dict
+         "schema.rkt"
+         "prop.rkt")
 
 ; Data Structures & Contracts
 (define (query-print q port write?)

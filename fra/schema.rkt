@@ -1,7 +1,9 @@
-#lang scheme
-(require (planet dherman/set:4/set))
+#lang racket/base
+(require racket/contract
+         racket/list
+         racket/set)
 
-; XXX These seem pretty inefficient
+;; XXX These seem pretty inefficient
 
 (define (schema . elems)
   (apply list elems))
@@ -35,19 +37,19 @@
   (let loop ([n 0]
              [s s])
     (if (empty? s)
-        (error 'index "Not an element: ~e" a)
-        (if (equal? (first s) a)
-            n
-            (loop (add1 n) (rest s))))))
+      (error 'index "Not an element: ~e" a)
+      (if (equal? (first s) a)
+        n
+        (loop (add1 n) (rest s))))))
 
 (define (schema-intersection s1 s2)
   (set->list
-   (set-intersection (list->set s1)
-                     (list->set s2))))
+   (set-intersect (list->set s1)
+                  (list->set s2))))
 (define (schema-difference s1 s2)
   (set->list
-   (set-difference (list->set s1)
-                   (list->set s2))))
+   (set-subtract (list->set s1)
+                 (list->set s2))))
 (define (schema-union s1 s2)
   (set->list
    (set-union (list->set s1)
@@ -57,7 +59,7 @@
            (list->set s2)))
 
 (define (schema-disjoint? s1 s2)
-  (set-empty? (set-intersection (list->set s1) (list->set s2))))
+  (set-empty? (set-intersect (list->set s1) (list->set s2))))
 (define (schema-orderi-equal? s1 s2)
   (set=? (list->set s1) (list->set s2)))
 

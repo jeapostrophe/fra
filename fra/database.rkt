@@ -1,9 +1,11 @@
-#lang scheme
-(require "query.ss"
-         "relation.ss"
-         "prop.ss"
-         "tuple.ss"
-         "optimize.ss")
+#lang racket/base
+(require racket/contract
+         racket/match
+         "query.rkt"
+         "relation.rkt"
+         "prop.rkt"
+         "tuple.rkt"
+         "optimize.rkt")
 
 (define current-database/c
   (-> symbol? relation?))

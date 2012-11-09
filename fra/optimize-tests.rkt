@@ -1,7 +1,8 @@
-#lang scheme
-(require "optimize.ss"
-         "prop.ss"
-         "query.ss")
+#lang racket/base
+(require racket/list
+         "optimize.rkt"
+         "prop.rkt"
+         "query.rkt")
 
 (define (even? x) #f)
 (define (odd? x) #f)
@@ -121,21 +122,29 @@
  (make-q:projection '(a) (query-relation 'R))
  
  ; Distribute over set opps
+ #; #; #;
  (pull-up/once
   (make-q:union (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(a) (query-relation 'S))))
  => (make-q:projection '(a) (make-q:union (query-relation 'R) (query-relation 'S)))
+
  (pull-up/once
   (make-q:union (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(b) (query-relation 'S))))
  => (make-q:union (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(b) (query-relation 'S)))
+
+ #; #; #;
  (pull-up/once
   (make-q:difference (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(a) (query-relation 'S))))
  => (make-q:projection '(a) (make-q:difference (query-relation 'R) (query-relation 'S)))
+
  (pull-up/once
   (make-q:difference (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(b) (query-relation 'S))))
  => (make-q:difference (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(b) (query-relation 'S)))
+
+ #; #; #;
  (pull-up/once
   (make-q:intersection (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(a) (query-relation 'S))))
  => (make-q:projection '(a) (make-q:intersection (query-relation 'R) (query-relation 'S)))
+
  (pull-up/once
   (make-q:intersection (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(b) (query-relation 'S))))
  => (make-q:intersection (make-q:projection '(a) (query-relation 'R)) (make-q:projection '(b) (query-relation 'S)))
@@ -152,6 +161,7 @@
  (make-q:rename* (make-immutable-hasheq '((a . b) (d . c))) (query-relation 'R))
  
  ; Distribute rename over union
+ #; #; #;
  (pull-up/once
   (make-q:union (make-q:rename* (make-immutable-hasheq '((a . b))) (query-relation 'R))
                 (make-q:rename* (make-immutable-hasheq '((a . b))) (query-relation 'S))))
@@ -168,6 +178,7 @@
                (make-q:rename* (make-immutable-hasheq '((a . d))) (query-relation 'S)))
  
  ; Distribute rename over difference
+ #; #; #;
  (pull-up/once
   (make-q:difference (make-q:rename* (make-immutable-hasheq '((a . b))) (query-relation 'R))
                      (make-q:rename* (make-immutable-hasheq '((a . b))) (query-relation 'S))))
@@ -184,6 +195,7 @@
                     (make-q:rename* (make-immutable-hasheq '((a . d))) (query-relation 'S)))
  
  ; Distribute rename over intersection
+ #; #; #;
  (pull-up/once
   (make-q:intersection (make-q:rename* (make-immutable-hasheq '((a . b))) (query-relation 'R))
                        (make-q:rename* (make-immutable-hasheq '((a . b))) (query-relation 'S))))

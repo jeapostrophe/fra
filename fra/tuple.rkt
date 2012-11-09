@@ -1,5 +1,8 @@
-#lang scheme
-(require "ivector.ss")
+#lang racket/base
+(require racket/contract
+         racket/match
+         racket/list
+         "ivector.rkt")
 
 (define-struct tuple (ivec) #:prefab)
 

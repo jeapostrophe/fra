@@ -1,6 +1,8 @@
-#lang scheme
-(require "query.ss"
-         #;(except-in "query.ss"
+#lang racket/base
+(require racket/match
+         racket/contract
+         "query.rkt"
+         #;(except-in "query.rkt"
                     make-q:rename*
                     make-q:union
                     make-q:intersection
@@ -8,8 +10,8 @@
                     make-q:product
                     make-q:projection
                     make-q:selection)
-         "prop.ss"
-         "schema.ss")
+         "prop.rkt"
+         "schema.rkt")
 
 (define (hash-image ht)
   (for/hash ([(from to) (in-hash ht)])
