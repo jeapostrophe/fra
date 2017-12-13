@@ -6,8 +6,11 @@
   #:transparent
   #:property prop:equal+hash
   (list (lambda (iv1 iv2 rec-equal?)
-          (and (an-ivector? iv2)
-               (for/and ([i (in-range 0 (ivector-length iv1))])
+          ; equal? guarantees both are an-ivector?
+          (define len
+            (ivector-length iv1))
+          (and (equal? len (ivector-length iv2))
+               (for/and ([i (in-range 0 len)])
                  (rec-equal? (ivector-ref iv1 i)
                              (ivector-ref iv2 i)))))
         (lambda (uiv1 rec-hash-code)

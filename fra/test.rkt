@@ -66,6 +66,11 @@
  (test
   (ivector-union (ivector 1 2) (ivector 3 4)) => (ivector 1 2 3 4)
   ((ivector-union (ivector 1 2) (ivector 3 4)) . equal? . (ivector 1 2 3 4))
+
+  (equal? (ivector) (ivector #t)) => #f
+  (equal? (ivector #t) (ivector)) => #f
+  (equal? (tuple) (tuple #t)) => #f
+  (equal? (tuple #t) (tuple)) => #f
   
   (execute-query (query-union (query-relation 'Employee) (query-relation 'Dept))) =error> "compatible"
   
